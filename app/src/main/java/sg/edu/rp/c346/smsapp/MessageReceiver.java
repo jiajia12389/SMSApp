@@ -12,6 +12,8 @@ import android.widget.Toast;
 public class MessageReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
+
+
         // SMS messages are retrieved from the intent's extra using the key "pdus"
         Bundle bundle = intent.getExtras();
         try{

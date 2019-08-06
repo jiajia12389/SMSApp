@@ -2,9 +2,11 @@ package sg.edu.rp.c346.smsapp;
 
 import android.Manifest;
 import android.content.BroadcastReceiver;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
+import android.net.Uri;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -17,18 +19,20 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
-    EditText to,content;
+    EditText toET,contentET;
     BroadcastReceiver br;
-    Button btn;
+    Button btn,btnMes;
+    String to,content;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        to = findViewById(R.id.to);
-        content = findViewById(R.id.content);
+        toET = findViewById(R.id.to);
+        contentET = findViewById(R.id.content);
         btn = findViewById(R.id.button);
+        btnMes = findViewById(R.id.buttonMes);
 
         br = new MessageReceiver();
 
@@ -41,10 +45,33 @@ public class MainActivity extends AppCompatActivity {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SmsManager smsManager = SmsManager.getDefault();
-                smsManager.sendTextMessage(to.getText().toString(), null, content.getText().toString(), null, null);
-                Toast.makeText(MainActivity.this,"Message Sent", Toast.LENGTH_LONG).show();
-                content.setText("");
+
+                String to = toET.getText().toString();
+                String content = contentET.getText().toString();
+
+                String[] numSplit = to.split(",");
+
+                for(String i:numSplit){
+                    SmsManager smsManager = SmsManager.getDefault();
+                    smsManager.sendTextMessage(i, null, content, null, null);
+                    Toast.makeText(MainActivity.this,"Message Sent", Toast.LENGTH_LONG).show();
+
+                }
+
+                contentET.setText("");
+            }
+        });
+
+        btnMes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                to = toET.getText().toString();
+                content = contentET.getText().toString();
+
+                Uri smsUri = Uri.parse("smsto:" + to);
+                Intent intent = new Intent(Intent.ACTION_SENDTO, smsUri);
+                intent.putExtra("sms_body", content);
+                startActivity(intent);
             }
         });
     }
